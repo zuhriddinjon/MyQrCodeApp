@@ -1,8 +1,9 @@
 package com.example.myqrcodeapp
 
-import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -11,24 +12,24 @@ import com.google.zxing.client.android.Intents
 import com.google.zxing.integration.android.IntentIntegrator
 
 
-private const val TAG = "CameraXBasic"
-private const val REQUEST_CODE_PERMISSIONS = 10
-private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 private const val CUSTOMIZED_REQUEST_CODE = 0x0000ffff
-
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            scanCode()
+//            finish()
+        }, 500)
 
-        scanCode()
+//        scanCode()
     }
 
     private fun scanCode() {
         IntentIntegrator(this).apply {
-//            captureActivity = CaptureAct::class.java
+            captureActivity = CaptureAct::class.java
             setOrientationLocked(false)
             setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
             setPrompt("Scanning Code")
@@ -56,20 +57,13 @@ class MainActivity : AppCompatActivity() {
             if (originalIntent == null) {
                 showDialog("Cancelled scan")
                 Log.d("MainActivity", "Cancelled scan")
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
             } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
                 showDialog("Cancelled scan due to missing camera permission")
                 Log.d("MainActivity", "Cancelled scan due to missing camera permission")
-                Toast.makeText(
-                    this,
-                    "Cancelled due to missing camera permission",
-                    Toast.LENGTH_LONG
-                ).show()
             }
         } else {
             showDialog(result.contents)
             Log.d("MainActivity", "Scanned")
-            Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -82,6 +76,5 @@ class MainActivity : AppCompatActivity() {
             .create()
             .show()
     }
-
 
 }
